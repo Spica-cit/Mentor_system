@@ -148,14 +148,23 @@ class MainWindow(QMainWindow):
 
         self.task_table.blockSignals(False)
 
+    # 先ほどまでのコードに続きます。変更点は add_task_row() の中にあります。
+
     def add_task_row(self):
         row = self.task_table.rowCount()
         self.task_table.insertRow(row)
         self.mark_modified()
 
+        # タスク名セル（編集可能に設定）
         name_item = QTableWidgetItem("")
+        name_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
         self.task_table.setItem(row, 0, name_item)
 
+        # セルを選択状態にし、即編集モードへ
+        self.task_table.setCurrentCell(row, 0)
+        self.task_table.editItem(name_item)
+
+        # 期限（QDateEdit）
         date_edit = QDateEdit()
         date_edit.setDisplayFormat("yyyy-MM-dd")
         date_edit.setCalendarPopup(True)
@@ -163,6 +172,7 @@ class MainWindow(QMainWindow):
         date_edit.dateChanged.connect(self.mark_modified)
         self.task_table.setCellWidget(row, 1, date_edit)
 
+        # 状態（QComboBox）
         state_combo = QComboBox()
         state_combo.addItems(TASK_STATES)
         state_combo.currentIndexChanged.connect(self.mark_modified)
